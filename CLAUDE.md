@@ -21,6 +21,9 @@ Todavía no hay un test runner configurado.
 
 Este proyecto fija `next@16.3.0`, una versión más nueva de lo que cubren la mayoría de los datos de entrenamiento — las APIs, convenciones y estructura de archivos pueden diferir de lo esperado. Según `AGENTS.md`, antes de escribir cualquier código de Next.js hay que leer la guía correspondiente en `node_modules/next/dist/docs/` (la documentación del App Router está en `01-app/`) y respetar los avisos de deprecación que se encuentren ahí.
 
+## Skills
+Usa siempre /frontend-design para diseñar interfaces de usuario
+
 ## Arquitectura
 
 - Solo App Router (directorio `app/`) — `app/layout.tsx` es el layout raíz, `app/page.tsx` la página de inicio.
