@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Press_Start_2P, JetBrains_Mono } from "next/font/google";
+import { SessionProvider } from "@/lib/session";
 import "./globals.css";
 
 const pixelFont = Press_Start_2P({
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <div className="av-bg" />
         <div className="av-noise" />
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );
