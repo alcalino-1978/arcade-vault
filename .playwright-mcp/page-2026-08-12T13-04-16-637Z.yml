@@ -1,0 +1,110 @@
+- generic [active] [ref=f3e1]:
+  - navigation [ref=f3e2]:
+    - generic [ref=f3e3] [cursor=pointer]: ARCADE VAULT
+    - generic [ref=f3e6]:
+      - link "Biblioteca" [ref=f3e7] [cursor=pointer]:
+        - /url: /
+      - link "Salón de la Fama" [ref=f3e8] [cursor=pointer]:
+        - /url: /salon
+    - generic [ref=f3e9]: CRÉDITOS · 03
+    - button "Iniciar Sesión" [ref=f3e12] [cursor=pointer]
+  - complementary [ref=f3e13]:
+    - generic [ref=f3e14]: MENÚ
+    - link "Biblioteca" [ref=f3e15] [cursor=pointer]:
+      - /url: /
+    - link "Salón de la Fama" [ref=f3e16] [cursor=pointer]:
+      - /url: /salon
+    - link "Iniciar Sesión" [ref=f3e17] [cursor=pointer]:
+      - /url: /login
+    - generic [ref=f3e19]: CRÉDITOS · 03
+  - main [ref=f3e20]:
+    - generic [ref=f3e21]:
+      - generic [ref=f3e25]:
+        - generic [ref=f3e26]:
+          - generic [ref=f3e27]: ARCADE
+          - generic [ref=f3e28]: 1 JUGADOR
+          - generic [ref=f3e29]: TECLADO / TÁCTIL
+          - generic [ref=f3e30]: RETRO 1985
+        - heading "SERPENTINA" [level=2] [ref=f3e31]
+        - paragraph [ref=f3e32]: Una serpiente de luz recorre la grilla buscando núcleos magenta. Cada bocado la alarga y la hace más veloz. Un movimiento en falso y se devora a sí misma.
+        - generic [ref=f3e33]:
+          - generic [ref=f3e34]:
+            - generic [ref=f3e35]: Partidas
+            - generic [ref=f3e36]: 9.1K
+          - generic [ref=f3e37]:
+            - generic [ref=f3e38]: Mejor global
+            - generic [ref=f3e39]: "7820"
+          - generic [ref=f3e40]:
+            - generic [ref=f3e41]: Dificultad
+            - generic [ref=f3e42]: ★ ★ ★ ☆ ☆
+        - generic [ref=f3e43]:
+          - link "▶ JUGAR AHORA" [ref=f3e44] [cursor=pointer]:
+            - /url: /juego/serpentina/jugar
+          - link "VOLVER AL VAULT" [ref=f3e45] [cursor=pointer]:
+            - /url: /
+      - complementary [ref=f3e46]:
+        - generic [ref=f3e47]:
+          - heading "MEJORES PUNTUACIONES" [level=3] [ref=f3e48]
+          - generic [ref=f3e49]:
+            - generic [ref=f3e50]: "#01"
+            - generic [ref=f3e51]:
+              - text: PX_KAI
+              - generic [ref=f3e52]: 26/06/2026
+            - generic [ref=f3e53]: "269.985"
+          - generic [ref=f3e54]:
+            - generic [ref=f3e55]: "#02"
+            - generic [ref=f3e56]:
+              - text: RETROVIRA
+              - generic [ref=f3e57]: 23/10/2026
+            - generic [ref=f3e58]: "251.253"
+          - generic [ref=f3e59]:
+            - generic [ref=f3e60]: "#03"
+            - generic [ref=f3e61]:
+              - text: SCANLINE
+              - generic [ref=f3e62]: 14/05/2026
+            - generic [ref=f3e63]: "209.839"
+          - generic [ref=f3e64]:
+            - generic [ref=f3e65]: "#04"
+            - generic [ref=f3e66]:
+              - text: BIT_LORD
+              - generic [ref=f3e67]: 07/09/2026
+            - generic [ref=f3e68]: "205.389"
+          - generic [ref=f3e69]:
+            - generic [ref=f3e70]: "#05"
+            - generic [ref=f3e71]:
+              - text: VECTORX
+              - generic [ref=f3e72]: 14/10/2026
+            - generic [ref=f3e73]: "182.751"
+          - generic [ref=f3e74]:
+            - generic [ref=f3e75]: "#06"
+            - generic [ref=f3e76]:
+              - text: JOY_STK
+              - generic [ref=f3e77]: 01/08/2026
+            - generic [ref=f3e78]: "147.815"
+          - generic [ref=f3e79]:
+            - generic [ref=f3e80]: "#07"
+            - generic [ref=f3e81]:
+              - text: RGB_QUEEN
+              - generic [ref=f3e82]: 09/11/2026
+            - generic [ref=f3e83]: "131.842"
+          - generic [ref=f3e84]:
+            - generic [ref=f3e85]: "#08"
+            - generic [ref=f3e86]:
+              - text: NEONFOX
+              - generic [ref=f3e87]: 27/07/2026
+            - generic [ref=f3e88]: "130.447"
+          - generic [ref=f3e89]:
+            - generic [ref=f3e90]: "#09"
+            - generic [ref=f3e91]:
+              - text: Z3R0COOL
+              - generic [ref=f3e92]: 13/09/2026
+            - generic [ref=f3e93]: "124.629"
+          - generic [ref=f3e94]:
+            - generic [ref=f3e95]: "#10"
+            - generic [ref=f3e96]:
+              - text: PIXEL_DAD
+              - generic [ref=f3e97]: 14/12/2026
+            - generic [ref=f3e98]: "99.230"
+  - contentinfo [ref=f3e99]: © 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0
+  - button "Open Next.js Dev Tools" [ref=f3e105] [cursor=pointer]
+  - alert [ref=f3e109]

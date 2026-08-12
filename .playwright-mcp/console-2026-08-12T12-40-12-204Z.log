@@ -1,0 +1,6 @@
+[  518085ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3050/juego/serpentina?_rsc=odiYMYyVIcjA0fRg:0
+[  518086ms] [ERROR] Failed to fetch RSC payload for http://localhost:3050/juego/serpentina. Falling back to browser navigation. TypeError: Failed to fetch
+    at n (http://localhost:3050/_next/static/chunks/213zvx-x_gk21.js:2:34601)
+    at N (http://localhost:3050/_next/static/chunks/213zvx-x_gk21.js:1:18681)
+    at async m (http://localhost:3050/_next/static/chunks/213zvx-x_gk21.js:1:16640)
+    at async x (http://localhost:3050/_next/static/chunks/213zvx-x_gk21.js:1:28405) @ http://localhost:3050/_next/static/chunks/213zvx-x_gk21.js:0
