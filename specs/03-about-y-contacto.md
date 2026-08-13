@@ -1,6 +1,6 @@
 # 03 — About y formulario de contacto con envío de correo
 
-**Estado:** Approved
+**Estado:** Implementado
 **Depende de:** SPEC 02
 **Fecha:** 2026-08-13
 
@@ -59,19 +59,19 @@ Esta pantalla no introduce estructuras de datos persistentes. El Server Action r
 
 ## Criterios de aceptación
 
-- [ ] `npm run build` compila sin errores.
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `/about` muestra la pantalla About: hero con misión y 3 highlights, divisor animado, sección de contacto con tips y formulario.
-- [ ] El Nav muestra "Acerca de" (activo en `/about`), en desktop y en el panel móvil, después de "Salón de la Fama".
-- [ ] Enviar el formulario con campos vacíos dispara el efecto `shake` y no invoca el envío de correo.
-- [ ] Enviar el formulario con un email de formato inválido muestra el efecto `shake` (o feedback equivalente) sin invocar el envío.
-- [ ] Enviar el formulario con datos válidos y `RESEND_API_KEY` configurada correctamente envía un correo real a `alcalino_78@hotmail.com` con nombre, email (como reply-to) y mensaje del remitente, y muestra el panel `terminal-success` con el nombre del remitente.
-- [ ] "ENVIAR OTRO MENSAJE" desde el estado de éxito resetea el formulario a sus campos vacíos.
-- [ ] Si el envío falla (ej. `RESEND_API_KEY` inválida), se muestra un mensaje de error visible, los datos del formulario no se pierden, y el usuario puede reintentar.
-- [ ] Mientras el envío está en curso, el botón de envío se deshabilita y muestra un estado de carga.
-- [ ] El efecto "reveal on scroll" se activa en el divisor y en la sección de contacto al hacer scroll.
-- [ ] Verificación visual con Playwright MCP completada: screenshots de `/about` en desktop y móvil revisados sin discrepancias visuales relevantes contra el template.
-- [ ] Ninguna pantalla usa `window.X` global ni hash-routing: toda la navegación usa rutas reales de Next.js.
+- [x] `npm run build` compila sin errores.
+- [x] `npm run lint` pasa sin errores.
+- [x] `/about` muestra la pantalla About: hero con misión y 3 highlights, divisor animado, sección de contacto con tips y formulario.
+- [x] El Nav muestra "Acerca de" (activo en `/about`), en desktop y en el panel móvil, después de "Salón de la Fama".
+- [x] Enviar el formulario con campos vacíos dispara el efecto `shake` y no invoca el envío de correo.
+- [x] Enviar el formulario con un email de formato inválido muestra el efecto `shake` (o feedback equivalente) sin invocar el envío.
+- [x] Enviar el formulario con datos válidos y `RESEND_API_KEY` configurada correctamente envía un correo real a `alcalino_78@hotmail.com` con nombre, email (como reply-to) y mensaje del remitente, y muestra el panel `terminal-success` con el nombre del remitente.
+- [x] "ENVIAR OTRO MENSAJE" desde el estado de éxito resetea el formulario a sus campos vacíos.
+- [x] Si el envío falla (ej. `RESEND_API_KEY` inválida), se muestra un mensaje de error visible, los datos del formulario no se pierden, y el usuario puede reintentar.
+- [x] Mientras el envío está en curso, el botón de envío se deshabilita y muestra un estado de carga.
+- [x] El efecto "reveal on scroll" se activa en el divisor y en la sección de contacto al hacer scroll.
+- [x] Verificación visual con Playwright MCP completada: screenshots de `/about` en desktop y móvil revisados sin discrepancias visuales relevantes contra el template.
+- [x] Ninguna pantalla usa `window.X` global ni hash-routing: toda la navegación usa rutas reales de Next.js.
 
 ## Decisiones tomadas y descartadas
 
