@@ -46,3 +46,9 @@ next-env.d.ts
 .claude/staged-files.json
 .claude/session-pids.json
 .claude/hooks/log-attribution.sh
+
+.playwright-screenshots/
+!.playwright-screenshots/.gitkeep
+
+.playwright-mcp/
+!.playwright-mcp/.gitkeep
