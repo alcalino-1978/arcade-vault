@@ -1,6 +1,6 @@
 # 02 — Home landing de Arcade Vault
 
-**Estado:** Approved
+**Estado:** Implemented
 **Depende de:** SPEC 01
 **Fecha:** 2026-08-13
 
@@ -15,7 +15,7 @@
 - Mover la pantalla Biblioteca actual (contenido de `app/page.tsx` existente: hero, buscador, chips, grid de `GameCard`) a `app/games/page.tsx`.
 - Actualizar `components/nav.tsx`:
   - Añadir un enlace "Inicio" hacia `/` (desktop y menú móvil).
-  - Renombrar el identificador interno `isActive("biblioteca")` a `isActive("games")` y el link de "Biblioteca" pasa a apuntar a `/games`.
+  - Renombrar el identificador interno `isActive("biblioteca")` a `isActive("games")`; el link pasa a apuntar a `/games` y su texto visible cambia de "Biblioteca" a "Juegos".
   - El logo (`onClick`) sigue navegando a `/` (ahora el nuevo Home).
   - No se añade ningún enlace "Acerca de" (fuera de alcance).
 - Actualizar las 4 redirecciones/enlaces internos que hoy apuntan a `/` para que apunten a `/games` (preservan su comportamiento de "volver a la biblioteca"):
@@ -45,25 +45,25 @@ Esta pantalla no introduce estructuras de datos nuevas. Reutiliza `GAMES` de `li
 2. Crear `app/games/page.tsx` moviendo el contenido actual de `app/page.tsx` (pantalla Biblioteca) sin cambios funcionales.
 3. Reescribir `app/page.tsx` con la pantalla Home portada de `home.jsx`: hero + `FloatingSilhouettes`, sección de features, preview de juegos con `MiniCard` (usa `GAMES.slice(0, 6)` y navega a `/juego/[id]`), sección de stats, sección de actividad (ticker + top jugadores con datos mock), sección de precios/FAQ, CTA final. Todos los `navigate(...)` del template se traducen a `next/link` / `useRouter().push(...)` hacia `/games`, `/login` o `/juego/[id]` según corresponda.
 4. Portar los estilos de `references/templates/home-about/styles.css` relevantes para Home a `app/globals.css` (clases listadas en Alcance), sin tocar las clases ya portadas en SPEC 01.
-5. Actualizar `components/nav.tsx`: añadir enlace "Inicio" (`/`), renombrar `isActive("biblioteca")` a `isActive("games")` y apuntar el link "Biblioteca" a `/games` (en versión desktop y en el panel móvil).
+5. Actualizar `components/nav.tsx`: añadir enlace "Inicio" (`/`), renombrar `isActive("biblioteca")` a `isActive("games")` y apuntar el link a `/games` con el texto "Juegos" (en versión desktop y en el panel móvil).
 6. Actualizar los 4 puntos de navegación interna que hoy apuntan a `/` (`app/salon/page.tsx`, `app/juego/[id]/page.tsx`, `app/juego/[id]/jugar/page.tsx`, `app/login/page.tsx`) para que apunten a `/games`.
 7. Verificar con `npm run lint` y `npm run build` que no haya errores de tipos ni de ESLint.
 8. Levantar `npm run dev` y usar Playwright MCP para navegar a `/` y `/games` en desktop y en viewport móvil (<840px), capturar screenshots y revisar visualmente cada sección, el Nav y el menú hamburguesa contra el diseño del template.
 
 ## Criterios de aceptación
 
-- [ ] `npm run build` compila sin errores.
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `/` muestra la pantalla Home: hero con siluetas flotantes, sección de features (4 tarjetas), preview de 6 juegos desde `GAMES`, sección de stats, sección de actividad (ticker + top jugadores), sección de precios con FAQ, y CTA final.
-- [ ] `/games` muestra la pantalla Biblioteca (buscador, chips de categoría, grid de `GameCard`) exactamente como antes de este spec.
-- [ ] El Nav muestra "Inicio" (activo en `/`) y "Biblioteca" (activo en `/games` y en `/juego/[id]`), en desktop y en el panel móvil.
-- [ ] En Home, los botones "EXPLORAR JUEGOS", "VER TODOS LOS JUEGOS →" e "INSERTAR MONEDA →" navegan a `/games`; "CREAR CUENTA" y "EMPEZAR GRATIS →" navegan a `/login`; cada `MiniCard` navega a `/juego/[id]` correspondiente.
-- [ ] "VOLVER A LA BIBLIOTECA" (salón) y "VOLVER AL VAULT" (detalle y reproductor) navegan a `/games`.
-- [ ] Tras enviar el formulario de login o pulsar "JUGAR COMO INVITADO" en `/login`, la navegación resultante es a `/games`.
-- [ ] El efecto "reveal on scroll" de las secciones de Home se activa al hacer scroll (las secciones aparecen con la clase `.in` al entrar en viewport).
-- [ ] El menú hamburguesa móvil (`< 840px`) en `/` y en `/games` abre/cierra el panel lateral y navega correctamente, incluyendo el nuevo enlace "Inicio".
-- [ ] Ninguna pantalla usa `window.X` global ni hash-routing: toda la navegación usa rutas reales de Next.js.
-- [ ] Verificación visual con Playwright MCP completada: screenshots de `/` y `/games` en desktop y móvil revisados sin discrepancias visuales relevantes contra el template.
+- [x] `npm run build` compila sin errores.
+- [x] `npm run lint` pasa sin errores.
+- [x] `/` muestra la pantalla Home: hero con siluetas flotantes, sección de features (4 tarjetas), preview de 6 juegos desde `GAMES`, sección de stats, sección de actividad (ticker + top jugadores), sección de precios con FAQ, y CTA final.
+- [x] `/games` muestra la pantalla Biblioteca (buscador, chips de categoría, grid de `GameCard`) exactamente como antes de este spec.
+- [x] El Nav muestra "Inicio" (activo en `/`) y "Juegos" (activo en `/games` y en `/juego/[id]`), en desktop y en el panel móvil.
+- [x] En Home, los botones "EXPLORAR JUEGOS", "VER TODOS LOS JUEGOS →" e "INSERTAR MONEDA →" navegan a `/games`; "CREAR CUENTA" y "EMPEZAR GRATIS →" navegan a `/login`; cada `MiniCard` navega a `/juego/[id]` correspondiente.
+- [x] "VOLVER A LA BIBLIOTECA" (salón) y "VOLVER AL VAULT" (detalle y reproductor) navegan a `/games`.
+- [x] Tras enviar el formulario de login o pulsar "JUGAR COMO INVITADO" en `/login`, la navegación resultante es a `/games`.
+- [x] El efecto "reveal on scroll" de las secciones de Home se activa al hacer scroll (las secciones aparecen con la clase `.in` al entrar en viewport).
+- [x] El menú hamburguesa móvil (`< 840px`) en `/` y en `/games` abre/cierra el panel lateral y navega correctamente, incluyendo el nuevo enlace "Inicio".
+- [x] Ninguna pantalla usa `window.X` global ni hash-routing: toda la navegación usa rutas reales de Next.js.
+- [x] Verificación visual con Playwright MCP completada: screenshots de `/` y `/games` en desktop y móvil revisados sin discrepancias visuales relevantes contra el template.
 
 ## Decisiones tomadas y descartadas
 
@@ -71,6 +71,7 @@ Esta pantalla no introduce estructuras de datos nuevas. Reutiliza `GAMES` de `li
 - **Sin enlace "Acerca de" en el Nav**: dado que la pantalla `about` está fuera de alcance, se omite el enlace por completo en vez de dejarlo como placeholder apuntando a `/`, para no mostrar navegación a contenido inexistente.
 - **Datos de "Actividad en vivo" y "Top jugadores" como arrays estáticos en el componente**: se descarta generarlos desde `seededScores`/`GAMES` de `lib/data.ts` porque el template no lo hace así y añadiría lógica no solicitada; se prioriza fidelidad al template, igual que el criterio ya usado en SPEC 01.
 - **Renombrado mínimo (solo ruta + `isActive` en Nav)**: se descarta renombrar `components/game-card.tsx` u otros archivos compartidos porque no son específicos de la pantalla Biblioteca y renombrarlos aumentaría el diff sin beneficio funcional.
+- **El link del Nav hacia `/games` se muestra como "Juegos" (no "Biblioteca")**: decisión revisada durante la implementación (Fase 4) a petición explícita del usuario. El resto de textos que mencionan "biblioteca" en la UI (ej. botón "VOLVER A LA BIBLIOTECA" en `/salon`) quedan sin cambios — el pedido fue acotado al link principal del Nav.
 - **Home como un único client component en `app/page.tsx` con subcomponentes internos**: se descarta extraer `MiniCard`, `FeatureIcon` y `FloatingSilhouettes` a `components/` porque ninguno se reutiliza fuera de Home, igual que en el template original.
 - **Los 4 puntos de navegación interna que apuntaban a `/` (salón, detalle, reproductor, login) se actualizan a `/games`**: preservan su comportamiento original de "volver a la biblioteca / lista de juegos" en vez de heredar el nuevo significado de `/` como landing.
 

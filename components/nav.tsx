@@ -37,7 +37,7 @@ export function Nav() {
             Inicio
           </Link>
           <Link href="/games" className={isActive("games") ? "active" : ""}>
-            Biblioteca
+            Juegos
           </Link>
           <Link href="/salon" className={isActive("salon") ? "active" : ""}>
             Salón de la Fama
@@ -78,7 +78,7 @@ export function Nav() {
           Inicio
         </Link>
         <Link href="/games" className={isActive("games") ? "active" : ""} onClick={() => setOpen(false)}>
-          Biblioteca
+          Juegos
         </Link>
         <Link href="/salon" className={isActive("salon") ? "active" : ""} onClick={() => setOpen(false)}>
           Salón de la Fama
