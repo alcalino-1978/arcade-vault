@@ -1,36 +1,32 @@
 # CLAUDE.md
 
-Este archivo proporciona guía a Claude Code (claude.ai/code) al trabajar con código en este repositorio.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @AGENTS.md
 
-## Acerca del proyecto
+## Project
 
-Arcade Vault — una plataforma para jugar online y competir por la mayor cantidad de puntos (según README.md). Es una app Next.js 16 recién generada (App Router), sin funcionalidades propias implementadas todavía más allá de la plantilla por defecto.
+Arcade Vault — an online gaming platform where users play and compete for points. Uses **Spec Driven Design** via the `/spec` and `/spec-impl` skills from `npx skills@latest add Klerith/fernando-skills`.
 
-## Comandos
+## Stack
 
-- `npm run dev` — inicia el servidor de desarrollo
-- `npm run build` — build de producción
-- `npm run start` — ejecuta el build de producción
-- `npm run lint` — ejecuta ESLint (config plana en `eslint.config.mjs`, extiende `eslint-config-next` core-web-vitals + typescript)
+- **Next.js 16.2.6** with App Router (`app/` directory) — read `node_modules/next/dist/docs/` before writing Next.js code; APIs differ from training data
+- **React 19.2.4**
+- **Tailwind CSS v4** (PostCSS plugin via `@tailwindcss/postcss`)
+- **TypeScript**
 
-Todavía no hay un test runner configurado.
-
-## Importante: leer antes de escribir código Next.js
-
-Este proyecto fija `next@16.3.0`, una versión más nueva de lo que cubren la mayoría de los datos de entrenamiento — las APIs, convenciones y estructura de archivos pueden diferir de lo esperado. Según `AGENTS.md`, antes de escribir cualquier código de Next.js hay que leer la guía correspondiente en `node_modules/next/dist/docs/` (la documentación del App Router está en `01-app/`) y respetar los avisos de deprecación que se encuentren ahí.
+No test runner is configured yet.
 
 ## Skills
-Usa siempre /frontend-design para diseñar interfaces de usuario
 
-## Arquitectura
+Usa siempre /frontend-design para diseñar la interfaz de usuario.
 
-- Solo App Router (directorio `app/`) — `app/layout.tsx` es el layout raíz, `app/page.tsx` la página de inicio.
-- Estilos con Tailwind CSS v4 (plugin `@tailwindcss/postcss`, configurado a través de `app/globals.css`, sin `tailwind.config` separado).
-- El alias de rutas `@/*` apunta a la raíz del repo (ver `tsconfig.json`).
-- El modo estricto de TypeScript está activado.
+## Architecture
 
-## Flujo de trabajo basado en specs
+Uses Next.js **App Router** exclusively — no `pages/` directory. Entry points:
 
-Este proyecto sigue Spec Driven Design usando las skills `spec` y `spec-impl` (ver https://github.com/Klerith/fernando-skills, instaladas con `npx skills@latest add Klerith/fernando-skills`). Cuando estas skills estén disponibles, se prefiere escribir/actualizar una spec antes de implementar features no triviales.
+- `app/layout.tsx` — root layout with Geist font variables and global CSS
+- `app/globals.css` — Tailwind base styles
+- `app/page.tsx` — home route (`/`)
+
+New routes go under `app/` as folders with `page.tsx`. Shared UI goes in `components/` (not yet created). Server Components are the default; mark client components with `"use client"` only when needed.

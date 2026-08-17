@@ -1,5 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+
+.playwright-screenshots/*
+!.playwright-screenshots/.gitkeep
+
+.playwright-mcp/*
+!.playwright-mcp/.gitkeep
+
 # dependencies
 /node_modules
 /.pnp
@@ -32,6 +39,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.template
 
 # vercel
 .vercel
@@ -39,16 +47,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Claude Source Control (auto-generated)
-.claude/file-attribution.jsonl
-.claude/session-names.json
-.claude/staged-files.json
-.claude/session-pids.json
-.claude/hooks/log-attribution.sh
-
-.playwright-screenshots/
-!.playwright-screenshots/.gitkeep
-
-.playwright-mcp/
-!.playwright-mcp/.gitkeep
