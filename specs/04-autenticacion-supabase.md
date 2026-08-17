@@ -1,6 +1,6 @@
 # 04 — Autenticación real con Supabase
 
-**Estado:** Approved
+**Estado:** Implemented
 **Depende de:** SPEC 02
 **Fecha:** 2026-08-17
 
