@@ -10,13 +10,15 @@
 
 **Incluye:**
 
-- Instalar la dependencia `@supabase/supabase-js`.
-- Crear `lib/supabase.ts` con un cliente de navegador único (`createClient(url, anonKey)`), usando `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` leídas de variables de entorno.
+- Instalar las dependencias `@supabase/supabase-js` y `@supabase/ssr`.
+- Crear `lib/supabase/client.ts` con un cliente de navegador (`createBrowserClient(url, anonKey)` de `@supabase/ssr`), usado desde Client Components (`lib/session.tsx`, `app/login/page.tsx`). La sesión se guarda en cookies (no en `localStorage`) gracias a `@supabase/ssr`.
+- Crear `lib/supabase/server.ts` con un cliente de servidor (`createServerClient` de `@supabase/ssr`, usando `next/headers` `cookies()`), disponible para uso futuro (middleware y, si hiciera falta, Server Components/Route Handlers). Este spec no lo consume todavía desde ninguna página.
+- Crear `middleware.ts` en la raíz del proyecto: en cada request llama a `supabase.auth.getUser()` con el cliente de servidor y reescribe las cookies de sesión en la response, siguiendo el patrón oficial de Supabase para Next.js App Router. No protege ninguna ruta (todas siguen siendo públicas); solo mantiene la cookie de sesión viva y sincronizada.
 - Variables de entorno en `.env.local` (no versionado, ya cubierto por `.env*` en `.gitignore`):
   - `NEXT_PUBLIC_SUPABASE_URL=https://wrzehjnbwgxfpqjqpsay.supabase.co`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY=` (la publishable/anon key del proyecto ya existente).
 - Reescribir `lib/session.tsx` (`SessionProvider`/`useSession`) para que:
-  - Al montar, lea la sesión actual con `supabase.auth.getSession()` y se suscriba a `supabase.auth.onAuthStateChange` para mantener `user` sincronizado.
+  - Al montar, lea la sesión actual con `supabase.auth.getSession()` (cliente de `lib/supabase/client.ts`) y se suscriba a `supabase.auth.onAuthStateChange` para mantener `user` sincronizado.
   - `user` se deriva de la sesión de Supabase cuando existe (`{ name: session.user.user_metadata.display_name ?? session.user.email }`), o del estado local de invitado (`loginAsGuest`) cuando no hay sesión de Supabase.
   - `signOut()` invoca `supabase.auth.signOut()` cuando hay sesión de Supabase; si el usuario actual es invitado, solo limpia el estado local (comportamiento actual).
   - Se añaden `signUpWithPassword(email, password, displayName)` y `signInWithPassword(email, password)` que devuelven `{ ok: true }` o `{ ok: false, error: string }` (usando el mensaje de error que devuelve Supabase), consumidos desde `LoginPage`.
@@ -36,7 +38,7 @@
 **No incluye:**
 
 - OAuth con Google/GitHub — los botones quedan como placeholder, sin conectar (decisión explícita en Fase 2).
-- `@supabase/ssr`, middleware, o cualquier verificación de sesión en Server Components/rutas de servidor — no existen rutas protegidas en servidor hoy que lo requieran.
+- Proteger rutas en servidor o leer la sesión desde Server Components/Route Handlers — `middleware.ts` solo refresca la cookie, no restringe ningún acceso; todas las rutas siguen siendo públicas igual que hoy.
 - Persistencia de puntuaciones, Salón de la Fama, o cualquier tabla nueva en la base de datos (`lib/data.ts` y `seededScores()` no se tocan) — el proyecto de Supabase no tiene tablas hoy y este spec no crea ninguna.
 - Recuperación de contraseña ("olvidé mi contraseña"), cambio de contraseña, o edición de perfil.
 - Mensajes de error traducidos/mapeados por tipo — se muestra el mensaje que devuelve Supabase tal cual (decisión explícita en Fase 2).
