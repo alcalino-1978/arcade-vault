@@ -60,14 +60,15 @@ Esta pantalla no introduce tablas nuevas en Supabase — usa exclusivamente `aut
 ## Plan de implementación
 
 1. Leer `node_modules/next/dist/docs/01-app/` según lo indicado en `AGENTS.md` antes de tocar `lib/session.tsx` (Client Components, contexto de React) y `app/login/page.tsx`.
-2. Instalar la dependencia `@supabase/supabase-js` (`npm install @supabase/supabase-js`).
+2. Instalar las dependencias `@supabase/supabase-js` y `@supabase/ssr` (`npm install @supabase/supabase-js @supabase/ssr`).
 3. Crear/actualizar `.env.local` con `NEXT_PUBLIC_SUPABASE_URL=https://wrzehjnbwgxfpqjqpsay.supabase.co` y `NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key del proyecto>`.
-4. Crear `lib/supabase.ts` exportando un cliente único `supabase = createClient(...)` construido con esas variables de entorno.
-5. Reescribir `lib/session.tsx`: `SessionProvider` sincroniza `user` con `supabase.auth.getSession()` + `onAuthStateChange`, añade `signUpWithPassword`/`signInWithPassword`, mantiene `loginAsGuest`/`signOut` con la lógica híbrida (Supabase si hay sesión real, local si es invitado) descrita en Alcance.
-6. Reescribir `app/login/page.tsx`: campo email en ambos tabs, campo "Nombre de jugador" en registro, `onSubmit` async con estado de carga y de error conectado a `signInWithPassword`/`signUpWithPassword`.
-7. En el dashboard de Supabase del proyecto `wrzehjnbwgxfpqjqpsay`, desactivar "Confirm email" en Authentication → Settings (paso manual, documentado también en Riesgos).
-8. Verificar con `npm run lint` y `npm run build` que no haya errores de tipos ni de ESLint.
-9. Levantar `npm run dev` y usar Playwright MCP para: registrar un usuario nuevo (ver redirección a `/games` y nombre en Nav), cerrar sesión, iniciar sesión con esas credenciales, probar credenciales inválidas (ver mensaje de error + shake), y recargar la página para confirmar que la sesión persiste.
+4. Crear `lib/supabase/client.ts` (`createBrowserClient`) y `lib/supabase/server.ts` (`createServerClient` con `cookies()` de `next/headers`), ambos construidos con esas variables de entorno.
+5. Crear `middleware.ts` en la raíz del proyecto: instancia el cliente de servidor, llama a `supabase.auth.getUser()` y reescribe las cookies de sesión en la `NextResponse`, con `matcher` que excluye assets estáticos (patrón oficial de Supabase para Next.js App Router).
+6. Reescribir `lib/session.tsx`: `SessionProvider` sincroniza `user` con `supabase.auth.getSession()` (cliente de `lib/supabase/client.ts`) + `onAuthStateChange`, añade `signUpWithPassword`/`signInWithPassword`, mantiene `loginAsGuest`/`signOut` con la lógica híbrida (Supabase si hay sesión real, local si es invitado) descrita en Alcance.
+7. Reescribir `app/login/page.tsx`: campo email en ambos tabs, campo "Nombre de jugador" en registro, `onSubmit` async con estado de carga y de error conectado a `signInWithPassword`/`signUpWithPassword`.
+8. En el dashboard de Supabase del proyecto `wrzehjnbwgxfpqjqpsay`, desactivar "Confirm email" en Authentication → Settings (paso manual, documentado también en Riesgos).
+9. Verificar con `npm run lint` y `npm run build` que no haya errores de tipos ni de ESLint.
+10. Levantar `npm run dev` y usar Playwright MCP para: registrar un usuario nuevo (ver redirección a `/games` y nombre en Nav), cerrar sesión, iniciar sesión con esas credenciales, probar credenciales inválidas (ver mensaje de error + shake), y recargar la página para confirmar que la sesión persiste (ahora vía cookie, refrescada por `middleware.ts`).
 
 ## Criterios de aceptación
 
@@ -88,7 +89,9 @@ Esta pantalla no introduce tablas nuevas en Supabase — usa exclusivamente `aut
 
 ## Decisiones tomadas y discartadas
 
-- **Cliente de navegador (`@supabase/supabase-js`) en lugar de `@supabase/ssr`**: se descarta la variante SSR/cookies + middleware porque hoy no existe ninguna ruta protegida en servidor; todas las pantallas ya son Client Components. Se prioriza la opción más simple que cubre el alcance actual.
+- **`@supabase/ssr` (cookies) en lugar de `@supabase/supabase-js` puro con `localStorage`**: decisión revisada durante Fase 3, a petición explícita del usuario. Se adopta el patrón oficial de Supabase para Next.js App Router (cliente browser + cliente servidor + `middleware.ts` que refresca la cookie) para dejar la sesión lista para SSR futuro, aunque hoy ninguna ruta la lea en servidor.
+- **`middleware.ts` sin proteger rutas**: se añade solo para refrescar la cookie de sesión en cada request (evita que expire silenciosamente); no se restringe el acceso a ninguna ruta porque no hay ese requisito todavía.
+- **Páginas siguen siendo 100% Client Components**: se descarta que `app/layout.tsx` u otra página lea la sesión inicial en servidor y la pase a `SessionProvider`, porque añadiría complejidad (adaptar el provider para aceptar un valor inicial) sin un requisito concreto que lo justifique hoy.
 - **Autenticación solo email + contraseña**: se descarta conectar OAuth (Google/GitHub) en este spec porque los botones ya existen como placeholder sin funcionalidad y añadir providers reales requiere configuración adicional en el dashboard de Supabase fuera del alcance pedido.
 - **Login por email en lugar de "usuario"**: el campo "Usuario" del tab de login se renombra a "Correo electrónico" porque Supabase Auth con contraseña autentica por email; mantener un username distinto habría requerido una tabla/RPC adicional para resolver username → email, fuera de alcance.
 - **`display_name` como metadata de `auth.users` en lugar de una tabla `profiles`**: se descarta crear una tabla nueva porque el único dato adicional necesario es el nombre visible en el Nav, y `user_metadata` de Supabase Auth ya lo cubre sin introducir modelo de datos nuevo.
@@ -100,5 +103,6 @@ Esta pantalla no introduce tablas nuevas en Supabase — usa exclusivamente `aut
 
 - **"Confirm email" activado por defecto en Supabase**: si el proyecto tiene la confirmación de email activada, `signUp` no autenticará inmediatamente al usuario y el flujo de "crear cuenta → redirigir a /games" fallará. Mitigación: paso manual documentado en el plan (paso 7) para desactivarlo en Authentication → Settings antes de probar; no hay herramienta MCP para automatizar este cambio.
 - **Exposición de la anon key en el cliente**: `NEXT_PUBLIC_SUPABASE_ANON_KEY` es pública por diseño (protegida por Row Level Security en las tablas, que hoy no existen). Mitigación: no se crea ninguna tabla en este spec, así que no hay datos sensibles expuestos todavía; cualquier tabla futura deberá definir políticas RLS explícitas.
-- **Next.js 16 más nuevo que la mayoría de los datos de entrenamiento**: según `AGENTS.md`, hay que leer `node_modules/next/dist/docs/01-app/` antes de modificar `lib/session.tsx` (Context/Client Components) y `app/login/page.tsx`.
-- **Persistencia de sesión vía `localStorage`**: el comportamiento por defecto de `@supabase/supabase-js` en navegador guarda la sesión en `localStorage`, lo que no funciona en modo incógnito/privado restringido. Mitigación: aceptable para el alcance actual (no hay requisito de soportar ese caso); si falla, el usuario simplemente vuelve a loguearse.
+- **Next.js 16 más nuevo que la mayoría de los datos de entrenamiento**: según `AGENTS.md`, hay que leer `node_modules/next/dist/docs/01-app/` antes de modificar `lib/session.tsx` (Context/Client Components), `app/login/page.tsx` y de crear `middleware.ts`.
+- **`middleware.ts` mal configurado puede degradar cada request**: si el `matcher` es demasiado amplio o la llamada a `getUser()` falla silenciosamente, todas las rutas (incluidas estáticas) podrían verse afectadas. Mitigación: seguir el `matcher` recomendado por la documentación oficial de Supabase/Next.js que excluye `_next/static`, `_next/image` y assets con extensión de archivo.
+- **Persistencia de sesión vía cookies**: `@supabase/ssr` guarda la sesión en cookies en vez de `localStorage`, lo que depende de que el navegador acepte cookies (falla en modo incógnito/privado muy restrictivo). Mitigación: aceptable para el alcance actual; si falla, el usuario simplemente vuelve a loguearse.
