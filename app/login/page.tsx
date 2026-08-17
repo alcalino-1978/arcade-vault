@@ -6,16 +6,46 @@ import { useSession } from "@/lib/session";
 
 export default function LoginPage() {
   const [tab, setTab] = useState<"in" | "up">("in");
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
   const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [shake, setShake] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const router = useRouter();
-  const { login, loginAsGuest } = useSession();
+  const { loginAsGuest, signInWithPassword, signUpWithPassword } = useSession();
 
-  const submit = (e: React.FormEvent) => {
+  const triggerShake = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 400);
+  };
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login({ name: (user || "PLAYER1").toUpperCase().slice(0, 10) });
-    router.push("/games");
+
+    if (!email.trim() || !pass.trim() || (tab === "up" && !displayName.trim())) {
+      triggerShake();
+      return;
+    }
+
+    setError(null);
+    setPending(true);
+    const result =
+      tab === "in"
+        ? await signInWithPassword(email.trim(), pass)
+        : await signUpWithPassword(
+            email.trim(),
+            pass,
+            displayName.toUpperCase().slice(0, 10),
+          );
+    setPending(false);
+
+    if (result.ok) {
+      router.push("/games");
+    } else {
+      setError(result.error ?? "Ha ocurrido un error. Inténtalo de nuevo.");
+      triggerShake();
+    }
   };
 
   const playAsGuest = () => {
@@ -25,7 +55,7 @@ export default function LoginPage() {
 
   return (
     <div className="av-auth-wrap fade-in">
-      <div className="auth-card">
+      <div className={"auth-card" + (shake ? " shake" : "")}>
         <div className="auth-header">
           <div className="mark"></div>
           <h2 className="neon-cyan">ARCADE VAULT</h2>
@@ -48,17 +78,21 @@ export default function LoginPage() {
 
         <form onSubmit={submit}>
           <div className="field">
-            <label>Usuario</label>
-            <input value={user} onChange={(e) => setUser(e.target.value)} placeholder="px_kai" />
+            <label>Correo electrónico</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="jugador@vault.gg"
+            />
           </div>
           {tab === "up" && (
             <div className="field slide-in">
-              <label>Correo electrónico</label>
+              <label>Nombre de jugador</label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jugador@vault.gg"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="px_kai"
               />
             </div>
           )}
@@ -72,8 +106,21 @@ export default function LoginPage() {
             />
           </div>
 
-          <button className="btn lg" type="submit" style={{ width: "100%", marginTop: 8 }}>
-            {tab === "in" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
+          {error && <div className="form-error">{error}</div>}
+
+          <button
+            className="btn lg"
+            type="submit"
+            style={{ width: "100%", marginTop: 8 }}
+            disabled={pending}
+          >
+            {pending
+              ? tab === "in"
+                ? "ENTRANDO…"
+                : "CREANDO…"
+              : tab === "in"
+                ? "ENTRAR AL VAULT"
+                : "CREAR Y JUGAR"}
           </button>
         </form>
 
