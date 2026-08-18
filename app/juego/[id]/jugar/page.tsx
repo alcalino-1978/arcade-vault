@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter, notFound } from "next/navigation";
 import { GAMES } from "@/lib/data";
 import { useSession } from "@/lib/session";
+import { createRocasEngine, type RocasEngineController } from "@/lib/games/rocas/engine";
 
 export default function GamePlayerPage() {
   const { id } = useParams<{ id: string }>();
@@ -11,31 +12,72 @@ export default function GamePlayerPage() {
   const { user } = useSession();
 
   const game = GAMES.find((g) => g.id === id);
+  const isRocas = game?.id === "rocas";
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
+  const [rocasLevel, setRocasLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user ? user.name : "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [runId, setRunId] = useState(0);
 
-  const level = useMemo(() => Math.floor(score / 2500) + 1, [score]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engineRef = useRef<RocasEngineController | null>(null);
+
+  const simulatedLevel = useMemo(() => Math.floor(score / 2500) + 1, [score]);
+  const level = isRocas ? rocasLevel : simulatedLevel;
 
   useEffect(() => {
-    if (over || paused) return;
+    if (!isRocas || over || paused) return;
     const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [isRocas, over, paused]);
+
+  useEffect(() => {
+    if (!isRocas) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const engine = createRocasEngine(canvas, {
+      onScoreChange: setScore,
+      onLivesChange: setLives,
+      onLevelChange: setRocasLevel,
+      onGameOver: () => setOver(true),
+    });
+    engineRef.current = engine;
+    engine.start();
+
+    return () => {
+      engine.destroy();
+      engineRef.current = null;
+    };
+  }, [isRocas, runId]);
+
+  useEffect(() => {
+    if (isRocas && over) engineRef.current?.setPaused(true);
+  }, [isRocas, over]);
 
   if (!game) notFound();
+
+  const togglePause = () => {
+    setPaused((p) => {
+      const next = !p;
+      if (isRocas) engineRef.current?.setPaused(next);
+      return next;
+    });
+  };
 
   const endGame = () => setOver(true);
   const restart = () => {
     setScore(0);
     setLives(3);
+    setRocasLevel(1);
     setPaused(false);
     setOver(false);
     setSaved(false);
+    if (isRocas) setRunId((n) => n + 1);
   };
 
   return (
@@ -62,7 +104,7 @@ export default function GamePlayerPage() {
           </div>
         </div>
         <div className="hud-actions">
-          <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
+          <button className="btn yellow" onClick={togglePause}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
           <button className="btn magenta" onClick={endGame}>
@@ -76,13 +118,23 @@ export default function GamePlayerPage() {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor"></div>
-            <div className="enemy e1"></div>
-            <div className="enemy e2"></div>
-            <div className="enemy e3"></div>
-            <div className="player-ship"></div>
-          </div>
+          {isRocas ? (
+            <canvas
+              key={runId}
+              ref={canvasRef}
+              width={800}
+              height={600}
+              className="game-canvas"
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor"></div>
+              <div className="enemy e1"></div>
+              <div className="enemy e2"></div>
+              <div className="enemy e3"></div>
+              <div className="player-ship"></div>
+            </div>
+          )}
           {paused && (
             <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
               <div>

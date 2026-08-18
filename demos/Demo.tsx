@@ -1,3 +1,3 @@
-export default function Demo() {
-  return <div>juasjkuas</div>;
-}
+export const Demo = () => {
+  return <div>Fernando Herrera</div>;
+};

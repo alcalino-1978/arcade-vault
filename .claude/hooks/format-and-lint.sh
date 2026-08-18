@@ -1,42 +1,36 @@
-#!/bin/bash
-node -e "
-  const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process');
-  let c=[];
-  process.stdin.on('data',d=>c.push(d));
-  process.stdin.on('end',()=>{
-    const d=JSON.parse(Buffer.concat(c).toString());
-    const filePath=d.tool_input&&d.tool_input.file_path;
-    if(!filePath)process.exit(0);
-    if(!fs.existsSync(filePath))process.exit(0);
+#!/usr/bin/env bash
 
-    const formattable=['.ts','.tsx','.js','.jsx','.mjs','.cjs','.json','.css','.md','.mdx','.yml','.yaml','.html'];
-    const lintable=['.ts','.tsx','.js','.jsx','.mjs','.cjs'];
-    const ext=path.extname(filePath).toLowerCase();
-    if(!formattable.includes(ext))process.exit(0);
+PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
-    const cwd=d.cwd;
-    const prettierBin=path.join(cwd,'node_modules','prettier','bin','prettier.cjs');
-    const eslintBin=path.join(cwd,'node_modules','eslint','bin','eslint.js');
-    if(!fs.existsSync(prettierBin))process.exit(0);
+INPUT=$(cat)
+FILE=$(node -e "
+const d = JSON.parse(process.argv[1]);
+const fp = d.tool_input && (d.tool_input.file_path || d.tool_input.path);
+if (fp) process.stdout.write(fp);
+" "$INPUT" 2>/dev/null)
 
-    try{
-      execFileSync(process.execPath,[prettierBin,'--write',filePath],{cwd,stdio:'inherit'});
-    }catch(e){
-      process.exit(0);
-    }
+[[ -z "$FILE" ]] && exit 0
+[[ "$FILE" != "$PROJECT_DIR/"* ]] && exit 0
+[[ ! -f "$FILE" ]] && exit 0
 
-    if(!lintable.includes(ext)||!fs.existsSync(eslintBin))process.exit(0);
+EXT="${FILE##*.}"
 
-    try{
-      execFileSync(process.execPath,[eslintBin,'--fix',filePath],{cwd,stdio:'inherit'});
-    }catch(e){}
+# Strip trailing whitespace from all text files
+sed -i '' 's/[[:space:]]*$//' "$FILE" 2>/dev/null || true
 
-    try{
-      execFileSync(process.execPath,[eslintBin,filePath],{cwd,stdio:'pipe'});
-    }catch(e){
-      const output=(e.stdout?e.stdout.toString():'')+(e.stderr?e.stderr.toString():'');
-      process.stderr.write(output);
-      process.exit(2);
-    }
-  });
-"
+case "$EXT" in
+  ts|tsx|js|jsx|mjs|cjs|json|css|md|mdx)
+    npx --prefix "$PROJECT_DIR" prettier --write "$FILE" 2>&1 | sed 's/^/[prettier] /' >&2 || true
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+
+case "$EXT" in
+  ts|tsx|js|jsx|mjs|cjs)
+    npx --prefix "$PROJECT_DIR" eslint --fix "$FILE" 2>&1 | sed 's/^/[eslint] /' >&2 || true
+    ;;
+esac
+
+exit 0
