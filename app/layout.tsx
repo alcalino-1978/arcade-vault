@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { UserProvider } from "./context/UserContext";
-import Nav from "@/components/Nav";
+import Nav from "@/components/nav";
 
 export const metadata: Metadata = {
   title: "Arcade Vault",

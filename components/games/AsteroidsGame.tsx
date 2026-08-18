@@ -1,14 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-
-interface AsteroidsGameProps {
-  paused: boolean;
-  onScoreChange: (score: number) => void;
-  onLivesChange: (lives: number) => void;
-  onLevelChange: (level: number) => void;
-  onGameOver: (finalScore: number) => void;
-}
+import { useLatestRef } from '@/lib/games/useLatestRef';
+import { useCanvasKeyboard } from '@/lib/games/useCanvasKeyboard';
+import type { CanvasGameProps } from '@/lib/games/types';
 
 export default function AsteroidsGame({
   paused,
@@ -16,64 +11,23 @@ export default function AsteroidsGame({
   onLivesChange,
   onLevelChange,
   onGameOver,
-}: AsteroidsGameProps) {
+}: CanvasGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Refs so the game loop always reads the latest prop values without re-running the effect
-  const pausedRef = useRef(paused);
-  const cbScore = useRef(onScoreChange);
-  const cbLives = useRef(onLivesChange);
-  const cbLevel = useRef(onLevelChange);
-  const cbOver = useRef(onGameOver);
-
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
-  useEffect(() => {
-    cbScore.current = onScoreChange;
-  }, [onScoreChange]);
-  useEffect(() => {
-    cbLives.current = onLivesChange;
-  }, [onLivesChange]);
-  useEffect(() => {
-    cbLevel.current = onLevelChange;
-  }, [onLevelChange]);
-  useEffect(() => {
-    cbOver.current = onGameOver;
-  }, [onGameOver]);
+  const pausedRef = useLatestRef(paused);
+  const cbScore = useLatestRef(onScoreChange);
+  const cbLives = useLatestRef(onLivesChange);
+  const cbLevel = useLatestRef(onLevelChange);
+  const cbOver = useLatestRef(onGameOver);
+  const { keysRef, pressed } = useCanvasKeyboard();
 
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext('2d')!;
+    const keys = keysRef.current;
     const W = 800;
     const H = 600;
-
-    // ── Input ────────────────────────────────────────────────────────────────
-    const keys: Record<string, boolean> = {};
-    const justPressed: Record<string, boolean> = {};
-
-    function onKeyDown(e: KeyboardEvent) {
-      justPressed[e.code] = !keys[e.code];
-      keys[e.code] = true;
-      if (
-        ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
-          e.code,
-        )
-      )
-        e.preventDefault();
-    }
-    function onKeyUp(e: KeyboardEvent) {
-      keys[e.code] = false;
-    }
-
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-
-    function pressed(code: string) {
-      const val = justPressed[code];
-      justPressed[code] = false;
-      return val;
-    }
 
     // ── Utils ────────────────────────────────────────────────────────────────
     const wrap = (v: number, max: number) => ((v % max) + max) % max;
@@ -482,7 +436,7 @@ export default function AsteroidsGame({
         prevScore = score;
       }
       if (lives !== prevLives) {
-        cbLives.current(lives);
+        cbLives.current?.(lives);
         prevLives = lives;
       }
       if (level !== prevLevel) {
@@ -502,10 +456,8 @@ export default function AsteroidsGame({
 
     return () => {
       cancelAnimationFrame(rafId);
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
     };
-  }, []);
+  }, [cbLevel, cbLives, cbOver, cbScore, keysRef, pausedRef, pressed]);
 
   return (
     <canvas
