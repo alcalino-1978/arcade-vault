@@ -6,6 +6,7 @@ export interface CanvasGameProps {
   onGameOver: (finalScore: number) => void;
   onLivesChange?: (lives: number) => void;
   onLinesChange?: (lines: number) => void;
+  onLengthChange?: (length: number) => void;
   // Permite que un juego (p. ej. Tetris con P/Escape) pida el toggle de
   // pausa al padre, que es quien posee el estado `paused`.
   onPauseToggle?: () => void;
