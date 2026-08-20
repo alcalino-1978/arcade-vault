@@ -33,6 +33,7 @@ function RegisteredGamePlayer({
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [lines, setLines] = useState(0);
+  const [length, setLength] = useState(0);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
@@ -42,10 +43,12 @@ function RegisteredGamePlayer({
 
   const showLives = stats.includes('lives');
   const showLines = stats.includes('lines');
+  const showLength = stats.includes('length');
 
   const handleScoreChange = useCallback((s: number) => setScore(s), []);
   const handleLivesChange = useCallback((l: number) => setLives(l), []);
   const handleLinesChange = useCallback((l: number) => setLines(l), []);
+  const handleLengthChange = useCallback((l: number) => setLength(l), []);
   const handleLevelChange = useCallback((l: number) => setLevel(l), []);
   const handlePauseToggle = useCallback(() => setPaused((p) => !p), []);
 
@@ -67,6 +70,7 @@ function RegisteredGamePlayer({
     setScore(0);
     setLives(3);
     setLines(0);
+    setLength(0);
     setLevel(1);
     setPaused(false);
     setOver(false);
@@ -103,6 +107,12 @@ function RegisteredGamePlayer({
               <div className="v">{lines}</div>
             </div>
           )}
+          {showLength && (
+            <div className="hud-stat">
+              <div className="l">Longitud</div>
+              <div className="v">{length}</div>
+            </div>
+          )}
           <div className="hud-stat level">
             <div className="l">Nivel</div>
             <div className="v">{String(level).padStart(2, '0')}</div>
@@ -135,6 +145,7 @@ function RegisteredGamePlayer({
             onScoreChange={handleScoreChange}
             onLivesChange={handleLivesChange}
             onLinesChange={handleLinesChange}
+            onLengthChange={handleLengthChange}
             onLevelChange={handleLevelChange}
             onGameOver={handleGameOver}
             onPauseToggle={handlePauseToggle}
