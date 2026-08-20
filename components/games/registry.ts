@@ -13,10 +13,12 @@ const AsteroidsGame = dynamic(() => import('./AsteroidsGame'), {
   ssr: false,
 });
 const TetrisGame = dynamic(() => import('./TetrisGame'), { ssr: false });
+const ArkanoidGame = dynamic(() => import('./ArkanoidGame'), { ssr: false });
 
 const registry: Record<string, GameRegistryEntry> = {
   asteroids: { Component: AsteroidsGame, stats: ['lives'] },
   tetris: { Component: TetrisGame, stats: ['lines'] },
+  arkanoid: { Component: ArkanoidGame, stats: ['lives'] },
 };
 
 export default registry;
